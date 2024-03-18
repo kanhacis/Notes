@@ -16,3 +16,11 @@ DATABASES = {
 python manage.py dumpdata --exclude=contenttypes > datadump.json [enable sqlite db before running this command and comment mysql db]
 
 python manage.py loaddata datadump.json
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+================= || Start php myadmin mysql || ===================
+- sudo service apache2 stop 
+- sudo /etc/init.d/mysql stop 
+- sudo /opt/lampp/lampp stop 
+-----------------------------------------------------------------------------------------------------------------------------------------
