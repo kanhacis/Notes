@@ -19,6 +19,14 @@ python manage.py loaddata datadump.json
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 
+
+============== Connect Django to postgresql ===================
+reference to connect django with postgresql
+https://stackoverflow.com/questions/32805224/django-db-utils-operationalerror-could-not-connect-to-server-no-such-file-or-d
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 ================= || Start php myadmin mysql || ===================
 - sudo service apache2 stop 
 - sudo /etc/init.d/mysql stop 
