@@ -23,6 +23,18 @@ python manage.py loaddata datadump.json
 ============== Connect Django to postgresql ===================
 reference to connect django with postgresql
 https://stackoverflow.com/questions/32805224/django-db-utils-operationalerror-could-not-connect-to-server-no-such-file-or-d
+
+Start the psql shell.
+- sudo -u postgres psql
+
+Connect to database
+- \c django_db1
+
+Display all the schemas of django_db1
+- \dt
+
+Display the data of account_user table
+- SELECT * FROM account_user;
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 
