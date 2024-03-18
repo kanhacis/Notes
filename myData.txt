@@ -24,3 +24,332 @@ python manage.py loaddata datadump.json
 - sudo /etc/init.d/mysql stop 
 - sudo /opt/lampp/lampp stop 
 -----------------------------------------------------------------------------------------------------------------------------------------
+
+
+================= Docker ===============
+check docker version: docker -v or --version
+create docker image: docker pull dockerImageName
+create container: docker run dockerImageName or docker run --name containerName dockerImageName
+direct run and create container: docker run --name python-c4 -it python:latest
+create and run container in background: docker run --name python-c5 -it -d python:latest
+show docker images: docker images
+show docker containers: docker ps -a (for all containers) or docker ps (for running containers)
+create container and run and when our work done delete that container: docker run --name python-c5 -it --rm python:latest
+
+create terminal for python: docker exec -it containerName python
+stop running container: docker stop containerName
+start container: docker start containerName
+restart container: docker restart containerName
+delete container: docker rm containerName or id
+
+delete docker image: docker rmi imageName
+remove all stop container: docker container prune
+remove all docker images: docker system prune
+
+build our own docker: docker build -t mydockerimage:v1.0 .
+
+
+-----Volume-------
+create volume: docker volume create volumeName
+list volumes: docker volume ls
+inspect volume: docker volume inspect volumeName
+remove volume: docker volume rm volumeName
+remove all volume: docker volume prune
+
+create volume & container together : docker run --name python-c1 -itd -v mySite_path:/myapp imageName 
+	- Example: docker run --name python-c1 -itd -v /home/cis/Desktop/mySite:/myapp python
+- docker exec -it python-c1 bash (using this we are connected with our mySite folder data which is python file and run the code even without having a python in our system) 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+================================ Mongo DB ================================================
+1. What is mongoDB?
+-> MongoDB is an open-source, document-oriented NoSQL DBMS.
+
+-> Store data in JSON format myData = {
+	name: 'kanha',
+	age: 22,
+	roll: 101
+}
+
+-> Designed for flexibility, scalability, and performance in handling unstructured or semi-structured data.
+
+2. SQL Vs MongoDB
+-> SQL
+	-> SQL db are relational db.
+	-> They use structured tables to store data in rows and columns.
+	-> Suitable for applications with well-defined schemas and fixed data structures.
+	-> Useful for: E-commerce Platform, HR Management etc.
+	-> Examples: MySQL, PostgreSQL, Oracle.
+	
+-> MongoDB (NoSQL)
+	-> NoSQL db are non-relational db.
+	-> They provide flexibility in data storage, allowing varied data types and structures.
+	-> Ideal for applications with dynamic or evolving data models.
+	-> SchemaLess data structure
+	-> CMS, Social Media Platforms, Gaming.
+	-> Examples: MongoDB, Cassandra, Redis
+	
+3. How MongoDB Works?
+-> Backend send request to MongoDB Server --> communicate to Storage Engine (WiredTiger) --> Work to read & write Data files from the db.
+-> WiredTiger convert json data to bson data to store in the db.
+
+4. JSOV Vs BSON
+-> In mongoDB, we write in JSON format only but behind the scene data is stored in BSON (Binary JSON) format, a binary representation of JSON.
+
+-> By utilizing BSOM MongoDB can achieve higher read and write speeds, reduces it well-suited for handling large and complex datasets while maintaining performance efficiency.
+
+5. MongoDB commands
+-> Enable mongoDB: sudo systemctl enable --now mongod
+-> Check status: sudo systemctl status mongod
+-> Check version: mongod --version
+-> Open mongo command line: mongosh
+-> Show db: show dbs
+
+-> Managing Database and Collections
+	- show dbs
+	- use <db-name>
+	- db.dropDatabase();
+	- show collections; 
+	- db.createCollection('<collection-name>')
+	- db.<collection-name>.drop();
+	
+Note: You won't see a database listed in the output of the show dbs command until that db contains at least one collection with data in it.
+
+
+-> Insert Operation in MongoDB
+	- db.<collection-name>.insertOne({field1: value1, field2: value2})
+		- while inserting it create a unique insertedId
+	
+	- db.<collection-name>.insertMany([{field1: value1, field2: value2}, {field1: value1, field2: value2}])
+	
+	- db.data.insertOne({'name':'kanha', 'height':"3'7\""})
+
+	
+-> Read or Show data
+	- db.<collection-name>.find()
+	
+Note: When to use Quotes and when not to?
+	- If a field name contains special characters or spaces, or starts with a numeric digit, using quotes is necessary
+	- If a field name is a reserverd keyword in Mongodb, use quotes distinguish it from the reserved keyword.
+	
+Note: Ordered and Unordered Inserts
+	- When we insert 1000 data and got error in 300th, In this case 299 data inserted successfully but 300 to 1000 data in not inserted, and this is called Ordered Inserts
+	
+	- When we insert 1000 data and got error in 300th, In this case 299 and 301 to 1000 data inserted successfully, This is called unordered insert. We just need to add extra things while inserting.
+	- Example
+		db.<collection-name>.insertMany([doc1, doc2, ...], {ordered:false})
+		
+		
+-> Case Sensitivity in MongoDB
+	- Collection names are case-sensitive
+	- Field names within documnets are also case-sensitive
+	- Example: 1. db.data.find() 
+		   2. db.Data.find()
+		   Both above query are different to each other
+		   
+-> Read Operations in MongoDB
+	- find()
+	    - db.collection_name.find({key:value})
+	    
+	- findOne()
+	    - db.collection_name.findOne({key:value})
+	    
+	    
+-> Importing JSON in MongoDB
+	- mongoimport jsonfile.json -d database_name -c collection_name
+	 
+	- use this if data is not inside the array
+	- mongoimport products.json -d shop -c products
+	
+	- use this if data is inside the array
+	- mongoimport products.json -d shop -c products --jsonArray
+	
+	
+-> Export JSON data from MongoDB to any directory
+	- mongoexport -d shop -c sales -o \home\cis\Desktop
+	
+	Note: Limited to imports of 16 MB or smaller
+	
+	
+-> Comparison Operators
+	- $eq = equal to
+	- $ne = not equal to
+	- $gt = greater than
+	- $gte = greater than equal to
+	- $lt = less than
+	- $lte = less than equal to
+	- $in
+	- $nin
+	
+	- Example 
+		- db.collection-name.find({'fieldName':value})
+		- db.products.find({'price':{$eq:200}})
+	
+		- db.products.find({'price':{$in:[200, 400, 240]}})
+	
+	
+	
+-> Inroduction to Cursors
+	- Cursors in MongoDB are used to efficiently retrieve large result sets from queries, providing control over the data retrieval process.
+	- Automatic Batching: MongoDB retrieves query results in batches once.
+	- Default batch size is usually 101 documents.
+	
+-> Cursor Methods
+	- count()
+	- limit()
+	- skip()
+	- sort()
+	
+	- Examples
+		- db.collectionName.find({'price':{$gte:250}}).count()
+		- db.collectionName.find({'price':{$gte:250}}).limit(5)
+		- db.collectionName.find({'price':{$gte:250}}).limit(5).skip(2)
+		- db.collectionName.find({'price':{$gte:250}}).limit(5).sort({price: 1})
+		- (1) for ascending order
+		- (-1) for descending order
+		
+		
+-> Logical Operators
+	- $and
+	- $or
+	- $not
+	- $nor
+	
+	- Examples
+		- db.products.find({$and: [{'price':{$gt: 100}}, {'name':'Diamond Ring'}]})
+		- Or
+		- db.products.find({'price':{$gte:100}, 'name':'Diamond Ring'})
+		
+		- db.products.find({$or: [{'price':{$gt:2000}}, {'name':'Diamond Ring'}]})
+		
+		
+
+ -> Elements Operator
+ 	- $exists
+ 	- $type
+ 	- $size
+ 	
+ 	- Examples
+ 		- db.products.find({'price':{'$exists':true}})
+ 		- db.products.find({'price':{'$exists':true}, 'price':{$gt:1250}}).count()
+ 		
+ 		- db.products.find({price:{$type: 'string'}}).count()
+ 		
+
+		
+-> Projection
+	- db.collection-name.find({}, {field1:1, field2:1})
+	
+	- To include specific fields, use projection with a value of 1 for the fields you want.
+	
+	- To exclude fields, use projection with a value of 0 for the fields you want to exlude.
+	
+	- You cannot include and exclude fields simultaneously in the same query projection.
+	
+	- Examples:
+		- Show only comments and title
+		- db.comments.find({},{title:1, comments:1})
+		
+		- Show only comments having size: 2
+		- db.comments.find({'comments':{$size:2}}, {comments:1, _id:0})
+		
+
+-> Embedded documents
+	- Query documents inside embedded documents using dot notation.
+	- db.collection.find({'parent.child':value})
+	
+	- db.comments.find({'comments.user':'Lily'})
+	
+	- db.comments.find({'metadata.views':{$lte:700}}).count()
+	
+	
+-> $all vs $elemMatch
+	- The $all operator selects the documents where the value of a field is an array that contains all the specified elements.
+	
+	- Find that doc where comments user = Alice and Vinod
+	db.collection-name.find({'comments.user':{$all:['Alice', 'Vinod']}})
+	
+	- Find the comment where user=Vinod and text is = 
+	db.comments.find({'comments':{$elemMatch:{'user':'Vinod', 'text':'Thanks for sharing.'}}})
+	
+		or
+	- db.comments.find({'comments.user':'Alice', 'comments.text':'Awesome article!'})
+	
+	
+-> How to find datatype of all the fields in MongoDB?
+	- typeof db.collection-name.findOne().fieldname;
+	
+	
+-> Update Operations in MongoDB
+	- db.collection-name.updateOne({_id:ObjectId("1234")}, {$set:{'price':100}})
+	
+	= update the isFeatures value = true in a products collections, where the name = Designer Handbag
+	
+	- db.collection-name.updateOne({'name':'Designer Handbag'}, {$set:{'isFeatured':false}})
+	
+	- db.products.updateMany({'price':120}, {$set:{'price':101}})
+	
+-> Removing and Renaming Fields
+	- db.collection-name.updateOne({filter}, {$unset:{fieldName:1}})
+	    - db.products.updateOne({_id:ObjectId("64c236a2e32f4a51b19b9280")}, {$unset:{"Price":0}})
+	
+	- db.collection-name.updateOne({filter}, {$rename:{oldField:newField}})
+	    - db.products.updateOne({_id: ObjectId('64c236a2e32f4a51b19b9280')}, {$rename:{'price':'Price'}})
+	    
+	 - Adding a new field in a document
+	 - db.collection-name.updateOne({filter}, {$set:{newField:newValue}})
+	
+	
+-> Updating arrays and Embedded Documents
+	- push
+	- db.comments.updateOne({_id:5}, {$push: {comments:{user:'Eva', text:'Hello, Eva'}}})
+	
+	- pop
+	- db.comments.updateOne({_id:5}, {$pop:{comments:1}})
+	
+	- update the text value within an commnets array = "Awesome article!", where the id=7 & usrename=alice.
+	- db.comments.update({_id:7, 'comments.user':'Alice'}, {$set:{'comments.$.text':'Awesome kanha'}})
+
+
+-> Delete Operations in MongoDB
+	- db.collection-name.deleteOne({filter})
+	
+	- db.collection-name.deleteMany({price:101})
+	
+	
+-> Indexes in MongoDB
+	- Indexes are specialized data structures that optimize data retrieval speed in MongoDB.
+	- Indexes store a fraction of data in a more searchable format.
+	- They enable MongoDB to locate data faster during queries.
+	- Indexes are separate from collections and multiple indexes can exist per collection.
+	
+	
+-> Managing Indexes 
+	- db.products.createIndex({field:1}) 
+		- (1) for storing indexes in ascending order 
+		- (-1) for storing indexes in descending order 
+		
+	- db.collection.getIndexes() 
+		- _id is a default index 
+		
+	- db.collection.dropIndex({field:1}) 
+	- db.collection.dropIndex("index_name")	
+	
+	
+-> What is Aggregation?
+	- Aggregation is the process of performing transformations on documnets and combining them to produce computed results.
+	
+	- Pipeline Stages: Aggregations consist of multiple pipeline stages, each performing specific operations on the input data.
+	
+	- Benefits
+		- Aggreating Data: Complex calculations and operations are possible.
+		- Advanced Transformations: Data can be combined, reshaped, and computed for insights.
+		- Efficient Processing: Aggregation handles large datasets efficiently.
+		
+
+-> MongoDB Atlas           
+username: kanhap           
+password1: t4eUHfz7eoZqsZtX 
+password2: patil#20001
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
