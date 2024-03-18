@@ -35,6 +35,15 @@ Display all the schemas of django_db1
 
 Display the data of account_user table
 - SELECT * FROM account_user;
+
+Convert sqlite data into json
+- python manage.py dumpdata > data.json [Before entering this command comment the postgresql and comment off the sqlite default database]
+
+Insert data into postgresql and make sure you comment the django default db and comment off the postgresql
+- python manage.py loaddata data.json
+
+- SELECT * FROM account_user;
+
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 
